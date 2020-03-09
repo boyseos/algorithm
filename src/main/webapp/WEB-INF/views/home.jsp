@@ -8,6 +8,6 @@
 	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 	<script src="<%=application.getContextPath()%>/resources/js/app.js"></script>
 <script>
-	app.run('<%=application.getContextPath()%>');
+	app.run('<%=application.getContextPath()%>')
 </script> 
 </html>

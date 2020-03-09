@@ -1,41 +1,20 @@
 var app = app || {}
 app = (()=>{
+	let ctx
 	let init = x =>{
 		sessionStorage.setItem("ctx",x)
+		ctx = x
 		$.api = api
 	}
 	
 	let onCreate = () =>{
-		braceTest()
+		$.getScript('./resources/js/Algorithm/braceTest.js')
+		$.getScript('./resources/js/Algorithm/maze.js')
 	}
 
-	let braceTest = () =>{
-		$('<div>',{
-			id: 'braceTest',
-			style:`
-				width:70%;
-				height:100px;
-				display: inline-flex;
-				margin:auto;`
-		}).appendTo('body')
-		$('<input></input>').attr('placeholder',"괄호수가 맞는지 순서가 맞는지등을 판단")
-		.css("width","500").appendTo('#braceTest')
-		.keyup(e=>{
-			if(e.key == 'Enter' && e.target.value){
-				$.api(`/test/brace`,{msg: e.target.value},d=>{
-					$('#braceResult').text(d ? "정상" : "에러")
-				})
-			}
-		})
-		$('<h3 id="braceResult">테스트</h3>').appendTo('#braceTest')
-	}
-	
-	
 	let run = x =>{
 		init(x)
-		setTimeout(() => {
-			onCreate()
-		},10)
+		onCreate()
 	}
 	
 	let api = (url,data,success) =>{

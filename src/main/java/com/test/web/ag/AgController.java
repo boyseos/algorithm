@@ -1,5 +1,6 @@
 package com.test.web.ag;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,15 @@ public class AgController {
 	@PostMapping("/brace")
 	public boolean braceTest(@RequestBody Map<String, String> param) {
 		return service.braceTest(param.get("msg"));
+	}
+	
+	@GetMapping("/maze/{size}")
+	public AgService.Maze maze(@PathVariable int size) {
+		System.out.println("메이즈 받은값 : " + size);
+		AgService.Maze maze = service.getMaze();
+		maze.setSize(size);
+		maze.mazeCreate();
+		return maze;
 	}
 
 }
