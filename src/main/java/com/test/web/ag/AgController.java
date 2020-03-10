@@ -33,6 +33,7 @@ public class AgController {
 		AgService.Maze maze = service.getMaze();
 		maze.setSize(size);
 		maze.mazeCreate();
+		maze.mazeRun();
 		return maze;
 	}
 
