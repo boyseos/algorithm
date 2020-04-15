@@ -48,7 +48,7 @@ public class AgService {
 		public List<Integer> path;
 		public List<List<Integer>> pathList;
 		
-		public int total;
+		public List<Integer> scoreList;
 		public List<Integer> totalList;
 		public List<Integer> maze;
 		
@@ -57,6 +57,7 @@ public class AgService {
 			pathList = new ArrayList<List<Integer>>();
 			maze = new ArrayList<Integer>();
 			totalList = new ArrayList<Integer>();
+			scoreList = new ArrayList<Integer>();
 		}
 		
 		public void mazeCreate() {
@@ -65,32 +66,36 @@ public class AgService {
 			for(int i=0;i<maxSize;i++) {
 				maze.add(mazeRan());
 			}
-			move(4);
 		}
 		
 		public void mazeRun(){
 			System.out.println("실행");
-			boolean run = true;
-			int i = 1;
-			while(run) {
-				System.out.printf("반복 : %d now: %d\n",i++,now);
-				if(moveCheck(-size)) move(1);
-				else if(moveCheck(size)) move(2);
-				else if(moveCheck(-1)) move(3);
-				else if(moveCheck(1)) move(4);
-				else if(!pathList.contains(path)){
-					pathList.add(path);
-					path.clear();
-					totalList.add(total);
-					total = 0;
-					now = 0;
-					move(4);
-				}else run = false;
-			}
+			move(4);
+			move();
 		}
 		
 		public void setSize(int size) {
 			this.size = size;
+		}
+		
+		private void move() {
+			Arrays.asList(1,-size,size,-1,maxSize+1).forEach(x->{
+				if(moveCheck(x)) {
+					now += x;
+					path.add(now);
+					scoreList.add(maze.get(now-1));
+					System.out.println("현재  : "+path+" score : "+scoreList);
+					move();
+				}else if(x==maxSize+1) {
+					pathList.add(path);
+					totalList.add(scoreList.size() != 1 ? scoreList.stream().reduce(0,(a,b)->a+b) : scoreList.get(0));
+					scoreList.remove(scoreList.size()-1);
+					path = new ArrayList<>(path);
+					path.remove(path.size()-1);
+					now = path.size() != 0 ? path.get(path.size()-1) : 1;
+					//System.out.println("빽하고 : "+path+" score : "+scoreList+"패스리스트 : "+pathList);
+				}
+			});
 		}
 		
 		private boolean move(int move) {
@@ -104,20 +109,22 @@ public class AgService {
 			if(test = moveCheck(move)) {
 				now += move;
 				path.add(now);
-				total += maze.get(now-1);
+				scoreList.add(maze.get(now-1));
+				//System.out.println("시작  : "+path+" score : "+scoreList);
 			}
 			return test;
 		}
 		
-		
-		
 		private boolean moveCheck(int num) {	//이동 가능자리인지 체크
 			int z = now + num;
-			return 0 < z && z <= maxSize  	//세로축 이동가능 확인
-				&& !path.contains(z)		// 지나왔던 경로확인
-				&& !(now%size==0 && num==1)	// 우측끝에서 우측이동
-				&& !(now%size==1 && num==-1)// 좌측끝에서 좌측이동
-				|| (now == 0 && num == 1);
+			boolean sero = 0 < z && z <= maxSize,
+					rightToright = !(now%size==0 && num==1),
+					leftToleft = !(now%size==1 && num==-1),
+					pathTest = !path.contains(z),
+					pathListTest = !pathList.contains(path);
+			//System.out.printf("이동체크 %d\t 세로 : %s 우측 : %s 좌측 : %s 경로 : %s 경로목록 : %s\n"
+			//		,z,sero,rightToright,leftToleft,pathTest,pathListTest);
+			return sero && rightToright && leftToleft && pathTest && pathListTest || (now==0&&num==1);
 		}
 		
 		private int mazeRan() {return (int) ((Math.random()-0.5)*200);}	//미로생성시 값 랜덤생성
