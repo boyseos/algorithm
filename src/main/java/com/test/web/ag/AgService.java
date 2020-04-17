@@ -80,15 +80,17 @@ public class AgService {
 		
 		private void move() {
 			Arrays.asList(1,-size,size,-1,maxSize+1).forEach(x->{
-				if(moveCheck(x)) {
+				if(moveCheck(x) && now != maxSize) { // now != maxSize end설정시 추가
 					now += x;
 					path.add(now);
 					scoreList.add(maze.get(now-1));
-					System.out.println("현재  : "+path+" score : "+scoreList);
+					//System.out.println("현재  : "+path+" score : "+scoreList);
 					move();
 				}else if(x==maxSize+1) {
+					if(now == maxSize) {	//end설정시
 					pathList.add(path);
 					totalList.add(scoreList.size() != 1 ? scoreList.stream().reduce(0,(a,b)->a+b) : scoreList.get(0));
+					}						//end설정시
 					scoreList.remove(scoreList.size()-1);
 					path = new ArrayList<>(path);
 					path.remove(path.size()-1);
@@ -117,14 +119,16 @@ public class AgService {
 		
 		private boolean moveCheck(int num) {	//이동 가능자리인지 체크
 			int z = now + num;
-			boolean sero = 0 < z && z <= maxSize,
-					rightToright = !(now%size==0 && num==1),
-					leftToleft = !(now%size==1 && num==-1),
-					pathTest = !path.contains(z),
-					pathListTest = !pathList.contains(path);
-			//System.out.printf("이동체크 %d\t 세로 : %s 우측 : %s 좌측 : %s 경로 : %s 경로목록 : %s\n"
-			//		,z,sero,rightToright,leftToleft,pathTest,pathListTest);
-			return sero && rightToright && leftToleft && pathTest && pathListTest || (now==0&&num==1);
+			return !Arrays.asList(
+					0 < z && z <= maxSize,					//sero
+					!(now%size==0 && num==1),				//rightToright
+					!(now%size==1 && num==-1),				//leftToleft
+					!path.contains(z),						//pathTest
+					!pathList.contains(path),				//pathListTest
+					//끝 지정시 추가부분
+					!((now %size == 0) && num == -size),		//rightEnd
+					!((now >= maxSize - size) && num == -1)			//bottomEnd
+					).contains(false) || (now==0&&num==1);
 		}
 		
 		private int mazeRan() {return (int) ((Math.random()-0.5)*200);}	//미로생성시 값 랜덤생성

@@ -20,8 +20,7 @@
 	})
 	
 	let createMaze = (num,maze) => {
-		let z = maze.totalList.reduce((a,b)=>Math.max(a,b))
-		
+		let z = maze.totalList.reduce((a,b)=> a>b ? a:b)
 		let y = maze.totalList.indexOf(z)
 		let x = maze.pathList[y]
 		console.log(x,y,z)
